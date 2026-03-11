@@ -1,0 +1,39 @@
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+// Create directory if it doesn't exist
+const uploadDir = "uploads/profile/";
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Multer storage configuration
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        // Unique filename: user-id + timestamp + extension
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        cb(null, `avatar-${uniqueSuffix}${path.extname(file.originalname)}`);
+    },
+});
+
+// File filter (only JPG/PNG)
+const fileFilter = (req, file, cb) => {
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error("Only JPG, JPEG, and PNG files are allowed!"), false);
+    }
+};
+
+const upload = multer({
+    storage,
+    limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
+    fileFilter,
+});
+
+export default upload;

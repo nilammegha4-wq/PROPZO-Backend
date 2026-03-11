@@ -1,0 +1,46 @@
+{
+  "owner": {
+    "rating": 0,
+    "totalListings": 0
+  },
+  "_id": "69a939a0173c31485071f929",
+  "title": "dipti",
+  "location": "Andheri West, Mumbai",
+  "address": "SV Road, Near Metro Station, Andheri West, Mumbai - 400058",
+  "price": 0,
+  "displayPrice": "₹2.1 Cr",
+  "category": "Buy",
+  "beds": 2,
+  "baths": 1,
+  "size": "4200 sqft",
+  "image": "PremiumVilla.jpg",
+  "images": [
+    "/PremiumVilla2.jpg",
+    "/PremiumVilla3.jpg",
+    "/PremiumVilla4.jpg",
+    "/PremiumVilla5.jpg"
+  ],
+  "map": "https://www.google.com/maps?q=Baner+Pune&output=embed",
+  "description": "bvjhbm",
+  "amenities": [
+    "Gym",
+    "Swimming Pool",
+    "Lift",
+    "CCTV",
+    "Power Backup",
+    "Club House",
+    "Garden",
+    "Security"
+  ],
+  "isSold": true,
+  "reviews": [],
+  "createdAt": "2026-03-05T08:06:56.451Z",
+  "updatedAt": "2026-03-05T08:07:36.205Z",
+  "__v": 0,
+  "propertyType": "Buy",
+  "furnished": "N/A",
+  "floor": "N/A",
+  "age": "N/A",
+  "area": "4200 sqft",
+  "_model": "Property"
+}

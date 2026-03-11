@@ -1,0 +1,51 @@
+{
+  "agents": [
+    {
+      "email": "rohit12@gmail.com",
+      "role": "Senior Agent",
+      "id": "69ab0e4252d8567dcf550203"
+    },
+    {
+      "email": "ananya34@gmail.com",
+      "role": "Junior Agent",
+      "id": "69ab0f1352d8567dcf550258"
+    },
+    {
+      "email": "karan56@gmail.com",
+      "role": "Sales Lead",
+      "id": "69ab0fd652d8567dcf550281"
+    },
+    {
+      "email": "priya78@gmail.com",
+      "role": "Property Manager",
+      "id": "69ab108952d8567dcf5502ae"
+    },
+    {
+      "email": "amit90@gmail.com",
+      "role": "Senior Agent",
+      "id": "69ab110a52d8567dcf5502cb"
+    },
+    {
+      "email": "sneha11@gmail.com",
+      "role": "Junior Agent",
+      "id": "69ab118552d8567dcf5502e8"
+    }
+  ],
+  "users": [
+    {
+      "email": "patelmahi3345@gmail.com",
+      "role": "user",
+      "id": "6996cee1f805ff3fa219f162"
+    },
+    {
+      "email": "prpzoestate@gmail.com",
+      "role": "admin",
+      "id": "69a66d623c7ffa408a22256d"
+    },
+    {
+      "email": "nilammegha4@gmail.com",
+      "role": "user",
+      "id": "69ae5861fe59d79727c3b600"
+    }
+  ]
+}
