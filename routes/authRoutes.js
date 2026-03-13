@@ -14,7 +14,7 @@ const router = express.Router();
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER || "prpzoestate@gmail.com",
+    user: process.env.EMAIL_USER || "propzoestate@gmail.com",
     pass: process.env.EMAIL_PASS || "mmnmwhrucjuaglbx",
   },
 });
@@ -160,7 +160,7 @@ router.post("/verify-otp", async (req, res) => {
       });
     }
 
-    if (user.otpExpire < Date.now()) {
+    if (user.otpExpires < Date.now()) {
       return res.status(400).json({
         success: false,
         message: "OTP expired",
@@ -169,7 +169,7 @@ router.post("/verify-otp", async (req, res) => {
 
     // Clear OTP
     user.otp = null;
-    user.otpExpire = null;
+    user.otpExpires = null;
     await user.save();
 
     const token = jwt.sign(
@@ -199,6 +199,89 @@ router.post("/verify-otp", async (req, res) => {
   }
 });
 
-// module.exports = router;
+
+/* ================== FORGOT PASSWORD (SEND OTP) ================== */
+
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User with this email does not exist",
+      });
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otp = otp;
+    user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 min
+    await user.save();
+
+    console.log(`\n\n************************************`);
+    console.log(`[FORGOT PASS] OTP for ${email}: ${otp}`);
+    console.log(`************************************\n\n`);
+
+    try {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER || "prpzoestate@gmail.com",
+        to: email,
+        subject: "Password Reset OTP",
+        text: `Your OTP for password reset is ${otp}. It expires in 10 minutes.`,
+      });
+      res.json({
+        success: true,
+        message: "Reset OTP sent to your email",
+      });
+    } catch (err) {
+      console.error("Nodemailer Error:", err.message);
+      res.status(500).json({
+        success: false,
+        message: "Failed to send reset email. Check server logs for OTP.",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+/* ================== RESET PASSWORD ================== */
+
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (user.otp !== otp) {
+      return res.status(400).json({ success: false, message: "Invalid OTP" });
+    }
+
+    if (user.otpExpires < Date.now()) {
+      return res.status(400).json({ success: false, message: "OTP expired" });
+    }
+
+    // Hash new password
+    const hashed = await bcrypt.hash(newPassword, 10);
+    user.password = hashed;
+    
+    // Clear OTP
+    user.otp = null;
+    user.otpExpires = null;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Password reset successful. You can now login.",
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
 
 export default router;

@@ -427,3 +427,28 @@ export const updateProperty = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+export const getPropertyStats = async (req, res) => {
+  try {
+    const buyQuery = { $or: [{ category: "Buy" }, { propertyType: "Buy" }, { category: "sale" }] };
+    const rentQuery = { $or: [{ category: "Rent" }, { propertyType: "Rent" }] };
+    const preRentQuery = { $or: [{ category: "PerRent" }, { category: "PreRent" }, { propertyType: "PerRent" }, { propertyType: "PreRent" }] };
+
+    const [buyCountP, buyCountS, rentCountP, rentCountS, preRentCountP, preRentCountS] = await Promise.all([
+      Property.countDocuments(buyQuery),
+      SaleProperty.countDocuments(buyQuery),
+      Property.countDocuments(rentQuery),
+      SaleProperty.countDocuments(rentQuery),
+      Property.countDocuments(preRentQuery),
+      SaleProperty.countDocuments(preRentQuery)
+    ]);
+
+    res.json({
+      buy: buyCountP + buyCountS,
+      rent: rentCountP + rentCountS,
+      preRent: preRentCountP + preRentCountS
+    });
+  } catch (error) {
+    console.error("Error in getPropertyStats:", error);
+    res.status(500).json({ message: error.message });
+  }
+};

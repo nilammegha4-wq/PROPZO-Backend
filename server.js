@@ -34,12 +34,14 @@
 
 
 
+import dotenv from "dotenv";
+dotenv.config(); // ✅ MUST BE BEFORE ROUTES
+
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-import path from "path";          // ✅ ADD THIS
-import { fileURLToPath } from "url"; // ✅ ADD THIS
+import path from "path";
+import { fileURLToPath } from "url";
 
 import authRoutes from "./routes/authRoutes.js";
 import agentRoutes from "./routes/agentRoutes.js";
@@ -53,8 +55,6 @@ import contactRoutes from "./routes/contactRoutes.js"; // ✅ Add this line
 import premiumServiceRoutes from "./routes/premiumServiceRoutes.js"; // ✅ Add this line
 import saleRoutes from "./routes/saleRoutes.js"; // ✅ Add this line
 import rentalBookingRoutes from "./routes/rentalBookingRoutes.js";
-
-dotenv.config();
 
 const app = express();
 app.use(cors());

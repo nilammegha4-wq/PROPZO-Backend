@@ -6,11 +6,13 @@ import {
   getPropertyById,
   deleteProperty,
   getPropertiesByAgent,
-  updateProperty
+  updateProperty,
+  getPropertyStats
 } from "../controllers/propertyController.js";
 
 const router = express.Router();
 
+router.get("/stats", getPropertyStats);
 router.get("/", getProperties);
 router.post("/", protect, addProperty);
 router.post("/create", protect, addProperty);
