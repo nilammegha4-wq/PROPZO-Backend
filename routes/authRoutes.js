@@ -57,7 +57,7 @@ router.post("/login", async (req, res) => {
 
       if (email === adminEmail && password === adminPassword) {
         const token = jwt.sign(
-          { id: "static-admin-id" },
+          { id: "ffffffffffffffffffffffff" },
           process.env.JWT_SECRET,
           { expiresIn: "10d" }
         );
@@ -66,7 +66,7 @@ router.post("/login", async (req, res) => {
           success: true,
           message: "Admin login successful",
           user: {
-            id: "static-admin-id",
+            id: "ffffffffffffffffffffffff",
             name: "PropZo Admin",
             email: adminEmail,
             role: "admin",

@@ -213,10 +213,10 @@ export const getUserProfileStats = async (req, res) => {
     const userId = req.params.id;
     console.log("Fetching profile stats for User ID:", userId);
 
-    if (userId === "static-admin-id") {
+    if (userId === "ffffffffffffffffffffffff") {
       return res.status(200).json({
         user: {
-          _id: "static-admin-id",
+          _id: "ffffffffffffffffffffffff",
           name: "PropZo Admin",
           email: process.env.ADMIN_EMAIL || "admin@gmail.com",
           role: "admin",
@@ -330,7 +330,7 @@ export const getUserBookings = async (req, res) => {
     const userId = req.params.id;
     console.log("Fetching ALL bookings for User ID:", userId);
 
-    if (userId === "static-admin-id") {
+    if (userId === "ffffffffffffffffffffffff") {
       return res.status(200).json([]);
     }
 
@@ -387,7 +387,7 @@ export const updateUserProfile = async (req, res) => {
   try {
     const userId = req.params.id;
 
-    if (userId === "static-admin-id") {
+    if (userId === "ffffffffffffffffffffffff") {
       return res.status(400).json({ message: "Cannot edit hardcoded admin profile from this portal." });
     }
 
@@ -430,7 +430,7 @@ export const updateUserPassword = async (req, res) => {
   try {
     const userId = req.params.id;
 
-    if (userId === "static-admin-id") {
+    if (userId === "ffffffffffffffffffffffff") {
       return res.status(400).json({ message: "Admin password can only be changed via environment variables." });
     }
 

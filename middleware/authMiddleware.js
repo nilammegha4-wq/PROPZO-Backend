@@ -11,8 +11,20 @@ export const authMiddleware = (req, res, next) => {
   }
 
   try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = verified;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Normalize Admin ID
+    if (decoded.id === "static-admin-id" || decoded.id === "ffffffffffffffffffffffff") {
+      req.user = {
+        _id: "ffffffffffffffffffffffff",
+        name: "PropZo Admin",
+        email: process.env.ADMIN_EMAIL || "admin@gmail.com",
+        role: "admin"
+      };
+    } else {
+      req.user = decoded;
+    }
+    
     next();
   } catch (error) {
     res.status(400).json({ message: "Invalid token" });
@@ -35,9 +47,9 @@ export const protect = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // ================= HANDLE STATIC ADMIN =================
-    if (decoded.id === "static-admin-id") {
+    if (decoded.id === "ffffffffffffffffffffffff" || decoded.id === "static-admin-id") {
       req.user = {
-        _id: "static-admin-id",
+        _id: "ffffffffffffffffffffffff",
         name: "PropZo Admin",
         email: process.env.ADMIN_EMAIL || "admin@gmail.com",
         role: "admin"

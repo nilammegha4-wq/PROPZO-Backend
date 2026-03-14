@@ -86,8 +86,14 @@ const normalizeAgent = (agent) => {
 
     return {
       ...obj,
+      _id: obj._id,
       name: obj.fullName || obj.name || "PropZo Advisor",
-      image: obj.image || ""
+      image: obj.image || "",
+      role: obj.role || "Property Specialist",
+      experience: obj.experience || "5+",
+      rating: obj.rating || 4.8,
+      phone: obj.phone || "+91 98765 43210",
+      email: obj.email || "prpzoestate@gmail.com"
     };
   } catch (e) {
     console.error("normalizeAgent error:", e);
@@ -97,16 +103,22 @@ const normalizeAgent = (agent) => {
 
 // Helper to normalize Owner data consistently
 const getNormalizedOwner = (owner, sellerName, phone, email, isSale = false) => {
+  const adminName = "Patel Mahi";
+  const adminPhone = "+91 98765 43210";
   const adminEmail = "prpzoestate@gmail.com";
 
   // If the owner is already fully populated object from the database
   if (owner && typeof owner === 'object' && owner.name) {
-    // If the email is one of the administrative ones, normalize it based on category
-    if (owner.email === "admin@propzo.com" || owner.email === "support@propzo.com" || owner.email === "prpzoestate@gmail.com") {
+    const isSystemAdmin = owner.email === "admin@propzo.com" || 
+                         owner.email === "support@propzo.com" || 
+                         owner.email === adminEmail ||
+                         owner.name === "Admin";
+    
+    if (isSystemAdmin) {
       return {
         ...owner,
-        name: "Admin",
-        phone: "+91 98765 43210",
+        name: owner.name === "Admin" ? adminName : owner.name,
+        phone: owner.phone || adminPhone,
         email: adminEmail,
         profileImage: owner.profileImage || ""
       };
@@ -115,10 +127,13 @@ const getNormalizedOwner = (owner, sellerName, phone, email, isSale = false) => 
   }
 
   // Fallback for platform-managed properties
+  // If sellerName is "Admin" or missing, use the real admin name
+  const nameToUse = (sellerName === "Admin" || !sellerName) ? adminName : sellerName;
+
   return {
-    name: sellerName || "Admin",
-    phone: phone || "+91 98765 43210",
-    email: (email && email !== "support@propzo.com" && email !== "admin@propzo.com" && email !== "prpzoestate@gmail.com") ? email : adminEmail,
+    name: nameToUse,
+    phone: phone || adminPhone,
+    email: (email && email !== "support@propzo.com" && email !== "admin@propzo.com" && email !== adminEmail) ? email : adminEmail,
     rating: 4.8,
     totalListings: 10,
     profileImage: ""

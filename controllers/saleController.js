@@ -5,6 +5,7 @@ export const createSaleProperty = async (req, res) => {
     try {
         console.log("📥 Incoming Sell Request (Files):", req.files?.length);
         console.log("📥 Incoming Sell Body:", JSON.stringify(req.body, null, 2));
+        console.log("👤 User from request:", req.user ? req.user._id : "NOT_FOUND");
 
         let imagePaths = [];
         if (req.files && req.files.length > 0) {
@@ -14,17 +15,17 @@ export const createSaleProperty = async (req, res) => {
         // Standardize fields for MongoDB save
         const finalData = {
             ...req.body,
+            price: Number(req.body.price),
             propertyType: req.body.propertyType || req.body.category || "Buy",
             images: imagePaths,
             image: imagePaths[0] || "",
             createdBy: req.user._id,
+            owner: req.user._id, // Must be ObjectId or null
 
-            // Map nested owner object
-            owner: {
-                name: req.body.sellerName || req.body.owner?.name || "Admin",
-                phone: req.body.phone || req.body.owner?.phone || "+91 98765 43210",
-                email: req.body.email || req.body.owner?.email || "prpzoestate@gmail.com",
-            },
+            // Map user-provided contact info to legacy/top-level fields
+            sellerName: req.body.sellerName || req.body.owner?.name || req.user.name,
+            phone: req.body.phone || req.body.owner?.phone || "+91 98765 43210",
+            email: req.body.email || req.body.owner?.email || req.user.email,
 
             // Normalize for internal use & save to model
             beds: parseInt(req.body.bhk) || parseInt(req.body.beds) || 0,
@@ -41,19 +42,29 @@ export const createSaleProperty = async (req, res) => {
             rentDuration: req.body.rentDuration || "month",
         };
 
-        console.log("📝 Final Data for MongoDB Save:", JSON.stringify(finalData, null, 2));
+        console.log("📝 finalData fields check:", {
+            title: finalData.title,
+            price: finalData.price,
+            propertyType: finalData.propertyType,
+            address: finalData.address,
+            city: finalData.city,
+            createdBy: finalData.createdBy,
+            owner: finalData.owner
+        });
 
         const saleProperty = await SaleProperty.create(finalData);
         console.log("✅ Saved to 'sell' collection:", saleProperty._id);
 
         // --- Start Email Dispatch ---
         try {
-            const userName = req.user?.name || finalData.owner.name || "User";
-            const userEmail = req.user?.email || finalData.owner.email;
-            const propertyTitle = finalData.title;
-            const propertyLocation = finalData.city;
-            const propertyPrice = finalData.price.toLocaleString("en-IN", { style: "currency", currency: "INR" });
-            const propertyType = finalData.propertyType;
+            const userName = req.user?.name || req.user?.fullName || "User";
+            const userEmail = req.user?.email;
+            const propertyTitle = finalData.title || "Untitled Property";
+            const propertyLocation = finalData.city || "N/A";
+            const propertyPrice = (typeof finalData.price === 'number') 
+                ? finalData.price.toLocaleString("en-IN", { style: "currency", currency: "INR" }) 
+                : "TBA";
+            const propertyType = finalData.propertyType || "Buy";
             const submitDate = new Date().toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' });
 
             if (userEmail && userEmail !== "support@propzo.com" && userEmail !== "admin@propzo.com") {
@@ -186,7 +197,7 @@ export const createSaleProperty = async (req, res) => {
         res.status(500).json({
             message: "Validation or Server Error",
             error: error.message,
-            details: error.errors // validation errors
+            details: error.errors
         });
     }
 };
